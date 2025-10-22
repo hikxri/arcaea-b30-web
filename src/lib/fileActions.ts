@@ -1,10 +1,14 @@
 import Papa from "papaparse";
+import { headersMap } from "./types";
 
 export async function parseCSV(file: File): Promise<Record<string, string>[]> {
   return new Promise((resolve, reject) => {
     Papa.parse<Record<string, string>>(file, {
       header: true,
-      transformHeader: (header) => header.trim(),
+      transformHeader: (header) => {
+        const key = header.trim().toLowerCase();
+        return headersMap[key];
+      },
       encoding: "utf-8",
       complete: function (results) {
         console.log("Parsed CSV:", results);
@@ -23,6 +27,7 @@ export async function loadScores(): Promise<Record<string, string>[]> {
   return new Promise((resolve, reject) => {
     Papa.parse<Record<string, string>>(scoresText, {
       header: true,
+      transformHeader: (header) => headersMap[header.trim().toLowerCase()],
       encoding: "utf-8",
       complete: function (results) {
         // console.log("Parsed CSV:", results);

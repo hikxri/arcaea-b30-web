@@ -2,13 +2,8 @@ import { Flex, Stack, Text } from "@chakra-ui/react";
 import QuestionToolTip from "./QuestionTooltip";
 import type { IncorrectRow } from "../../lib/types";
 import { IncorrectTable } from "../tables/IncorrectTable";
-import { ShowMoreRows } from "./ShowMoreRows";
-
-const valuesMap = {
-  level: "Level",
-  cc: "CC",
-  note: "Note count",
-};
+import { ShowMoreRows } from "../tables/ShowMoreRows";
+import { shortValuesMap } from "../../lib/types";
 
 export default function IncorrectRows({
   data,
@@ -23,10 +18,10 @@ export default function IncorrectRows({
     const row = data[obj.index];
     const { index, value, expected, actual } = obj;
     return {
-      Title: row.Title,
-      Difficulty: row.Difficulty,
+      title: row.title,
+      diff: row.diff,
       index: String(index + 2),
-      value: valuesMap[value],
+      value: shortValuesMap[value],
       expected,
       actual,
     };

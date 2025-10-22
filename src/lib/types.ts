@@ -15,3 +15,45 @@ export interface IncorrectRow {
   expected: string;
   actual: string;
 }
+
+export const shortValuesMap = {
+  level: "Level",
+  cc: "CC",
+  note: "Note count",
+};
+
+export const valuesMap = {
+  level: "Level",
+  cc: "Chart Constant",
+  note: "Note count",
+};
+
+export const headersMap: Record<string, string> = {
+  title: "title",
+  diff: "diff",
+  difficulty: "diff",
+  level: "level",
+  cc: "cc",
+  "chart constant": "cc",
+  score: "score",
+  note: "note",
+  "note count": "note",
+  pmr: "pmr",
+  "pm rating": "pmr",
+  pr: "pr",
+  "play rating": "pr",
+  pp: "pp",
+  "play potential": "pp",
+};
+
+export const inverseHeadersMap: Record<string, string> = {
+  title: "Title",
+  diff: "Difficulty",
+  level: "Level",
+  cc: "Chart Constant",
+  note: "Note Count",
+  score: "Score",
+  pmr: "PM Rating",
+  pr: "Play Rating",
+  pp: "Play Potential",
+};

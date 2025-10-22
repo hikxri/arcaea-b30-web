@@ -1,5 +1,5 @@
 import { loadScores } from "./fileActions";
-import type { ValidationResult } from "./types";
+import { valuesMap, type ValidationResult } from "./types";
 
 export const SCORES = await loadScores();
 
@@ -19,7 +19,7 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
   // ass code
   // check for unknown rows
   for (const [index, row] of data.entries()) {
-    if (!scores.some((r) => r["Title"] === row["Title"] && r["Difficulty"] === row["Difficulty"])) {
+    if (!scores.some((r) => r["title"] === row["title"] && r["diff"] === row["diff"])) {
       // console.log("Unknown (data index)", index);
       result.unknown.add(index);
       result.success = false;
@@ -28,7 +28,7 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
 
   // check for missing rows
   for (const [index, row] of scores.entries()) {
-    if (!data.some((r) => r["Title"] === row["Title"] && r["Difficulty"] === row["Difficulty"])) {
+    if (!data.some((r) => r["title"] === row["title"] && r["diff"] === row["diff"])) {
       // console.log("Missing (score index)", index);
       result.missing.add(index);
       result.success = false;
@@ -38,7 +38,7 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
   // check for duplicate rows (same title and difficulty)
   const duplicateMap = new Map<string, number[]>();
   for (const [index, row] of data.entries()) {
-    const key = `${row["Title"]}--${row["Difficulty"]}`;
+    const key = `${row["title"]}--${row["diff"]}`;
 
     if (!duplicateMap.has(key)) {
       duplicateMap.set(key, []);
@@ -57,33 +57,33 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
   // checking for incorrectness
   for (const [index, row] of data.entries()) {
     if (index === 0) continue;
-    const song = scores.find((r) => r["Title"] === row["Title"] && r["Difficulty"] === row["Difficulty"]);
+    const song = scores.find((r) => r["title"] === row["title"] && r["diff"] === row["diff"]);
     if (!song) continue;
-    if (row["Level"] !== song["Level"]) {
+    if (row["level"] !== song["level"]) {
       result.incorrect.push({
         index: index,
         value: "level",
-        expected: song["Level"],
-        actual: row["Level"],
+        expected: song["level"],
+        actual: row["level"],
       });
       result.success = false;
     }
-    if (toNumber(row["Chart Constant"]) !== toNumber(song["Chart Constant"])) {
-      // console.log(row["Title"], row["Difficulty"], row["Chart Constant"], "--", song["Title"], song["Difficulty"], song["Chart Constant"]);
+    if (toNumber(row["cc"]) !== toNumber(song["cc"])) {
+      // console.log(row["title"], row["diff"], row["cc"], "--", song["title"], song["diff"], song["cc"]);
       result.incorrect.push({
         index: index,
         value: "cc",
-        expected: song["Chart Constant"],
-        actual: row["Chart Constant"],
+        expected: song["cc"],
+        actual: row["cc"],
       });
       result.success = false;
     }
-    if (toNumber(row["Note Count"]) !== toNumber(song["Note Count"])) {
+    if (toNumber(row["note"]) !== toNumber(song["note"])) {
       result.incorrect.push({
         index: index,
         value: "note",
-        expected: song["Note Count"],
-        actual: row["Note Count"],
+        expected: song["note"],
+        actual: row["note"],
       });
       result.success = false;
     }
@@ -92,23 +92,55 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
   return result;
 }
 
+export function fixData(data: Record<string, string>[], fixes: ValidationResult): void {
+  const { unknown, missing, duplicate, incorrect } = fixes;
+
+  // fix unknown rows by removing them
+  const rowsToRemove = [...unknown];
+
+  // fix incorrect rows
+  for (const { index, value, expected } of incorrect) {
+    data[index][valuesMap[value]] = expected;
+  }
+
+  // fix missing rows by appending to the end
+  for (const index of missing) {
+    data.push(SCORES[index]);
+  }
+
+  // fix duplicate rows by removing them
+  for (const indexes of duplicate) {
+    // get index with the highest score
+    const index = indexes.reduce((a, b) => toNumber(data[a]["score"]) > toNumber(data[b]["score"]) ? a : b, indexes[0]);
+
+    // remove all other indexes
+    rowsToRemove.push(...indexes.filter((i) => i !== index));
+  }
+
+  // remove rows
+  rowsToRemove.sort((a, b) => b - a);
+  for (const index of rowsToRemove) {
+    if (index >= 0 && index < data.length) data.splice(index, 1);
+  }
+}
+
 function normalizeRow(row: Record<string, string>): Record<string, string> {
-  const title = String(row["Title"] ?? "")
+  const title = String(row["title"] ?? "")
     .replace(/^"+|"+$/g, "")
     .replace(/""+/g, '"')
     .replace(/'/g, '"')
     .trim();
-  const difficulty = String(row["Difficulty"] ?? "")
+  const difficulty = String(row["diff"] ?? "")
     .trim()
     .toUpperCase();
-  return { ...row, Title: title, Difficulty: difficulty };
+  return { ...row, title: title, diff: difficulty };
 }
 
 function toNumber(str: string): number {
   try {
     return Number(str.replace(/'|,/g, ""));
   } catch {
-    console.log(str);
+    // console.log(str);
     return 0;
   }
 }

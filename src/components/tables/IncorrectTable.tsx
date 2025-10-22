@@ -53,8 +53,8 @@ export function IncorrectTable({ rows, showHeader = true }: { rows: Record<strin
         {rows.map((row, index) => (
           <Table.Row key={`row-${index}`}>
             <Table.Cell textAlign={"end"}>{row["index"]}</Table.Cell>
-            <Table.Cell>{row["Title"]}</Table.Cell>
-            <Table.Cell textAlign={"center"}>{row["Difficulty"]}</Table.Cell>
+            <Table.Cell>{row["title"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["diff"]}</Table.Cell>
             <Table.Cell textAlign={"center"}>{row["value"]}</Table.Cell>
             <Table.Cell textAlign={"center"} borderRightWidth={"0px"}>{row["actual"]}</Table.Cell>
             <Table.Cell textAlign={"center"} borderXWidth={"0px"}>

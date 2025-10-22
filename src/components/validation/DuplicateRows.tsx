@@ -1,6 +1,6 @@
-import { Stack, Text } from "@chakra-ui/react";
+import { Stack, StackSeparator, Text } from "@chakra-ui/react";
 import { MiniRowTable } from "../tables/MiniRowTable";
-import { ShowMoreRows } from "./ShowMoreRows";
+import { ShowMoreRows } from "../tables/ShowMoreRows";
 
 export default function DuplicateRows({
   data,
@@ -12,7 +12,7 @@ export default function DuplicateRows({
   const count = duplicate.size;
   const duplicateRows = Array.from(duplicate).map((rows) =>
     rows.map((index) => {
-      return { ...data[index], Index: String(index + 2) };
+      return { ...data[index], index: String(index + 2) };
     })
   );
 
@@ -21,7 +21,7 @@ export default function DuplicateRows({
       <Text>There are {count} groups of duplicate rows in your file:</Text>
       <ShowMoreRows cond={count > 5}>
         {(showAll) => (
-          <Stack gap="3">
+          <Stack separator={<StackSeparator />}>
             {(showAll ? duplicateRows : duplicateRows.slice(0, 5)).map((rows, index) => (
               <MiniRowTable rows={rows} showHeader={index === 0} />
             ))}

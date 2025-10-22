@@ -3,12 +3,13 @@ import { LuUpload } from "react-icons/lu";
 import { useDataContext } from "./contexts/DataContext";
 import { useEffect, useState } from "react";
 import { parseCSV } from "./lib/fileActions";
-import { validateData } from "./lib/validation";
+import { fixData, validateData } from "./lib/validation";
 import type { ValidationResult } from "./lib/types";
 import DuplicateRows from "./components/validation/DuplicateRows";
 import MissingRows from "./components/validation/MissingRows";
 import UnknownRows from "./components/validation/UnknownRows";
 import IncorrectRows from "./components/validation/IncorrectRows";
+import { useNavigate } from "react-router";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -92,6 +93,7 @@ function Parsing({
     async function parse() {
       try {
         setParsing(true);
+        console.log("Parsing...");
         const parsedData = await parseCSV(file);
         setData(parsedData);
       } catch (e) {
@@ -117,7 +119,8 @@ function Parsing({
 }
 
 function Validation() {
-  const { data } = useDataContext();
+  const navigate = useNavigate();
+  const { data, setData } = useDataContext();
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<ValidationResult>({
     success: false,
@@ -174,7 +177,7 @@ function Validation() {
   } else {
     return (
       <Center width={"100vw"}>
-        <Stack width={"80%"} maxW={"1000px"}>
+        <Stack width={"80%"} maxW={"1000px"} >
           <Text>Oh no :(</Text>
           <Text>Your file seems to be wrong, see below:</Text>
           <Text color="fg.muted" fontSize={"sm"}>
@@ -186,6 +189,20 @@ function Validation() {
             {result?.unknown.size > 0 && <UnknownRows data={data} unknown={result.unknown} />}
             {result?.incorrect.length > 0 && <IncorrectRows data={data} incorrect={result.incorrect} />}
           </Stack>
+          <Center>
+            <Button
+              width={"50%"}
+              onClick={() => {
+                fixData(data, result);
+                console.log(data);
+                setData(data);
+
+                navigate("/display");
+              }}
+            >
+              Apply fixes
+            </Button>
+          </Center>
         </Stack>
       </Center>
     );

@@ -2,12 +2,12 @@ import { Flex, Stack, Text } from "@chakra-ui/react";
 import { SCORES } from "../../lib/validation";
 import { MiniRowTable } from "../tables/MiniRowTable";
 import QuestionToolTip from "./QuestionTooltip";
-import { ShowMoreRows } from "./ShowMoreRows";
+import { ShowMoreRows } from "../tables/ShowMoreRows";
 
 export default function MissingRows({ missing }: { missing: Set<number> }) {
   const count = missing.size;
   const missingRows = Array.from(missing).map((index) => {
-    return { ...SCORES[index], Index: String(index + 2) };
+    return { ...SCORES[index], index: String(index + 2) };
   });
 
   return (

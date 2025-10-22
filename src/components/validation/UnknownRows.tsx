@@ -5,7 +5,7 @@ import QuestionToolTip from "./QuestionTooltip";
 export default function UnknownRows({ data, unknown }: { data: Record<string, string>[]; unknown: Set<number> }) {
   const count = unknown.size;
   const unknownRows = Array.from(unknown).map((index) => {
-    return { ...data[index], Index: String(index + 2) };
+    return { ...data[index], index: String(index + 2) };
   });
 
   return (

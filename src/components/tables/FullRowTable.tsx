@@ -1,7 +1,7 @@
 import { Table } from "@chakra-ui/react";
 import { Tooltip } from "../ui/tooltip";
 
-export function MiniRowTable({ rows, showHeader = true }: { rows: Record<string, string>[]; showHeader?: boolean }) {
+export function FullRowTable({ rows, showHeader = true }: { rows: Record<string, string>[]; showHeader?: boolean }) {
   return (
     <Table.Root showColumnBorder minW={"500px"} interactive borderYWidth={"1px"}>
       <Table.ColumnGroup>
@@ -39,7 +39,19 @@ export function MiniRowTable({ rows, showHeader = true }: { rows: Record<string,
               </Table.ColumnHeader>
             </Tooltip>
             <Tooltip showArrow positioning={{ placement: "top" }} content="Note count">
-              <Table.ColumnHeader key="note">Notes</Table.ColumnHeader>
+              <Table.ColumnHeader key="note" textAlign={"center"}>Notes</Table.ColumnHeader>
+            </Tooltip>
+            <Tooltip showArrow positioning={{ placement: "top" }} content="Your score on the song">
+              <Table.ColumnHeader key="score" textAlign={"center"}>Score</Table.ColumnHeader>
+            </Tooltip>
+            <Tooltip showArrow positioning={{ placement: "top" }} content="How far away you are from a max Pure Memory. '-' if you don't have a PM">
+              <Table.ColumnHeader key="pmr" textAlign={"center"}>PM Rating</Table.ColumnHeader>
+            </Tooltip>
+            <Tooltip showArrow positioning={{ placement: "top" }} content="How good your play is (0.0 to 2.0)">
+              <Table.ColumnHeader key="pr" textAlign={"center"}>Play rating</Table.ColumnHeader>
+            </Tooltip>
+            <Tooltip showArrow positioning={{ placement: "top" }} content="This affects your Potential">
+              <Table.ColumnHeader key="pp" textAlign={"center"}>Play potential</Table.ColumnHeader>
             </Tooltip>
           </Table.Row>
         </Table.Header>
@@ -52,7 +64,11 @@ export function MiniRowTable({ rows, showHeader = true }: { rows: Record<string,
             <Table.Cell textAlign={"center"}>{row["diff"]}</Table.Cell>
             <Table.Cell textAlign={"center"}>{row["level"]}</Table.Cell>
             <Table.Cell textAlign={"center"}>{row["cc"]}</Table.Cell>
-            <Table.Cell>{row["note"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["note"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["score"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["pmr"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["pr"]}</Table.Cell>
+            <Table.Cell textAlign={"center"}>{row["pp"]}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

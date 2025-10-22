@@ -6,7 +6,7 @@ export function ShowMoreRows({ cond, children }: { cond: boolean; children: (sho
   if (!cond) return children(showAll);
   return (
     <Stack alignItems={"center"}>
-      <ShowButton showAll={showAll} setShowAll={setShowAll} />
+      {showAll && <ShowButton showAll={showAll} setShowAll={setShowAll} />}
       {children(showAll)}
       <ShowButton showAll={showAll} setShowAll={setShowAll} />
     </Stack>

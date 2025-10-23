@@ -1,5 +1,6 @@
+import { getPlayPotential, getPlayRating, getPMRating } from "./calc";
 import { loadScores } from "./fileActions";
-import { valuesMap, type ValidationResult } from "./types";
+import { type ValidationResult } from "./types";
 
 export const SCORES = await loadScores();
 
@@ -92,6 +93,7 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
   return result;
 }
 
+// fixes the data after validation, modifies the original array
 export function fixData(data: Record<string, string>[], fixes: ValidationResult): void {
   const { unknown, missing, duplicate, incorrect } = fixes;
 
@@ -100,7 +102,7 @@ export function fixData(data: Record<string, string>[], fixes: ValidationResult)
 
   // fix incorrect rows
   for (const { index, value, expected } of incorrect) {
-    data[index][valuesMap[value]] = expected;
+    data[index][value] = expected;
   }
 
   // fix missing rows by appending to the end
@@ -122,6 +124,16 @@ export function fixData(data: Record<string, string>[], fixes: ValidationResult)
   for (const index of rowsToRemove) {
     if (index >= 0 && index < data.length) data.splice(index, 1);
   }
+
+  // sort data by cc
+  data.sort((a, b) => toNumber(b["cc"]) - toNumber(a["cc"]));
+
+  // recalculate pmr, pr, pp
+  for (const row of data) {
+    row["pmr"] = getPMRating(toNumber(row["score"]));
+    row["pr"] = getPlayRating(toNumber(row["score"])).toFixed(3);
+    row["pp"] = getPlayPotential(toNumber(row["cc"]), toNumber(row["pr"])).toFixed(3);
+  }
 }
 
 function normalizeRow(row: Record<string, string>): Record<string, string> {
@@ -136,11 +148,11 @@ function normalizeRow(row: Record<string, string>): Record<string, string> {
   return { ...row, title: title, diff: difficulty };
 }
 
-function toNumber(str: string): number {
+export function toNumber(str: string): number {
   try {
     return Number(str.replace(/'|,/g, ""));
   } catch {
-    // console.log(str);
+    console.log(`[toNumber] Failed to convert ${str}`);
     return 0;
   }
 }

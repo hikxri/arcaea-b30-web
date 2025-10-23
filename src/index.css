@@ -1,6 +1,5 @@
 :root {
-  font-family: 'Nunito', Helvetica;
-  src: url('fonts/Nunito.tff') format('truetype');
+  font-family: 'Nunito', 'MyriadPro', Helvetica;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -12,4 +11,21 @@
   /* background-color: #737373; */
   font-size: larger;
   font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('fonts/Nunito.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('fonts/MyriadPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('fonts/MyriadPro-Bold.ttf') format('truetype');
+  font-weight: bold;
 }

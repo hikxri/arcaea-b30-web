@@ -1,21 +1,24 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { getDifficultyColor, getGrade, getPotentialColor, getSongJacket } from "../../lib/drawing";
 import { toNumber } from "../../lib/validation";
 import type { Difficulty } from "../../lib/types";
 import { getAveragePlayPotential, getMaxPlayPotential } from "../../lib/calc";
 
-export default function Canvas({
-  topEntries,
-  rows,
-  username,
-  potential,
-}: {
+export type CanvasProps = {
   topEntries: Record<string, string>[];
   rows: number;
   username: string;
   potential: number;
-}) {
+  options: CanvasOptions;
+};
+
+export type CanvasOptions = {
+  avg: boolean;
+  max: boolean;
+};
+
+function Canvas({ topEntries, rows, username, potential, options }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -117,22 +120,28 @@ export default function Canvas({
       }
 
       // b30 ptt
-      ctx.font = "40px MyriadPro";
-      ctx.textAlign = "right";
-      const averagePtt = getAveragePlayPotential(topEntries);
-      const averagePttText =
-        topEntries.length === 30
-          ? `Average play potential: ${averagePtt.toFixed(3)}`
-          : `B${topEntries.length} play potential: ${averagePtt.toFixed(3)}`;
-      drawTextWithOutline(averagePttText, 1690, 246);
+      if (options.avg) {
+        ctx.font = "40px MyriadPro";
+        ctx.textAlign = "right";
+        const averagePtt = getAveragePlayPotential(topEntries);
+        const averagePttText =
+          topEntries.length === 30
+            ? `Average play potential: ${averagePtt.toFixed(3)}`
+            : `B${topEntries.length} play potential: ${averagePtt.toFixed(3)}`;
+        drawTextWithOutline(averagePttText, 1690, 246);
+      }
 
       // max ptt
-      const maxPtt = getMaxPlayPotential(topEntries.slice(0, 30));
-      const maxPttText =
-        topEntries.length === 30
-          ? `Max play potential: ${maxPtt.toFixed(3)}`
-          : `B30 play potential: ${maxPtt.toFixed(3)}`;
-      drawTextWithOutline(maxPttText, 1690, 296);
+      if (options.max) {
+        ctx.font = "40px MyriadPro";
+        ctx.textAlign = "right";
+        const maxPtt = getMaxPlayPotential(topEntries.slice(0, 30));
+        const maxPttText =
+          topEntries.length === 30
+            ? `Max play potential: ${maxPtt.toFixed(3)}`
+            : `B30 play potential: ${maxPtt.toFixed(3)}`;
+        drawTextWithOutline(maxPttText, 1690, 296);
+      }
 
       ctx.textAlign = "center";
       // songs grid
@@ -267,3 +276,5 @@ export default function Canvas({
     </Box>
   );
 }
+
+export default memo(Canvas);

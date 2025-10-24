@@ -1,5 +1,7 @@
 import type { Difficulty } from "./types";
 
+const songNameMap = await fetch("songNameMap.json").then((res) => res.json());
+
 export function getPotentialColor(potential: number): string {
   try {
     if (potential >= 13.0) {
@@ -82,7 +84,5 @@ export async function getSongJacket(title: string, diff: Difficulty): Promise<HT
 }
 
 async function unicodeToText(text: string): Promise<string> {
-  const songNameMap = await fetch("songNameMap.json").then((res) => res.json());
-
   return songNameMap[text] || text;
 }

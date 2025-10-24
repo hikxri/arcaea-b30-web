@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Checkbox,
@@ -8,36 +9,49 @@ import {
   GridItem,
   Input,
   NumberInput,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import Canvas, { type CanvasOptions, type CanvasProps } from "./components/canvas/Canvas";
+import Canvas, { type CanvasOptions, type CanvasProps, type CanvasToggles } from "./components/canvas/Canvas";
 import { useState } from "react";
 import { useDataContext } from "./contexts/DataContext";
 import { sortData } from "./lib/dataActions";
+import {
+  getLocalData,
+  getLocalUsername,
+  getLocalUserPotential,
+  setLocalUsername,
+  setLocalUserPotential,
+} from "./lib/storageActions";
 
 export default function Render() {
   const [rows, setRows] = useState<number>(6);
-  const [username, setUsername] = useState<string>("");
-  const [potential, setPotential] = useState<number>(0.0);
-  const [options, setOptions] = useState<CanvasOptions>({ avg: true, max: true });
+  const [username, setUsername] = useState<string>(getLocalUsername());
+  const [potential, setPotential] = useState<number>(getLocalUserPotential());
+  const [options, setOptions] = useState<CanvasOptions>({
+    toggles: { avg: true, max: true, solidBg: false },
+    customize: { bgColor: "#130921" },
+  });
 
   // form hack to stop Canvas from re-rendering every time you type something
   const [formData, setFormData] = useState<CanvasProps | null>(null);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   let data = useDataContext().data;
-  if (data.length === 0) data = JSON.parse(localStorage.getItem("data") || "[]");
+  if (data.length === 0) data = getLocalData();
 
   const sorted = sortData(data);
   const topEntries = sorted.slice(0, rows * 5);
 
   return (
     <Center>
-      <Stack justify={"center"} align={"center"}>
+      <Stack justify={"center"} align={"center"} gapY={6}>
         <Text fontWeight={"bold"} fontSize={"3xl"}>
           Render your card!
         </Text>
-        <Grid templateColumns={"repeat(2, 1fr)"} gapY={3}>
+        <Grid templateColumns={"repeat(2, 1fr)"} gapX={10} gapY={3}>
           <GridItem>
             <RowsInput rows={rows} setRows={setRows} />
           </GridItem>
@@ -51,22 +65,41 @@ export default function Render() {
             <OptionsCheckbox options={options} setOptions={setOptions} />
           </GridItem>
         </Grid>
-        <Button fontWeight="bold" onClick={() => setFormData({ topEntries, username, rows, potential, options })}>
-          Render
-        </Button>
+        <Field.Root width={"auto"} alignItems={"center"}>
+          <Button fontWeight="bold" onClick={() => handleRender()} disabled={loading}>
+            {loading ? "Rendering..." : "Render"}
+          </Button>
+          <Field.HelperText>Loading song jackets might take a few seconds, please be patient!</Field.HelperText>
+        </Field.Root>
+        {loading && (
+          <Stack alignItems={"center"}>
+            <Spinner size="xl" />
+            <Text>Rendering...</Text>
+          </Stack>
+        )}
         {formData && (
-          <Canvas
-            key={formData ? "0" : "1"}
-            topEntries={formData.topEntries}
-            rows={formData.rows}
-            username={formData.username}
-            potential={formData.potential}
-            options={formData.options}
-          />
+          <Box display={loading ? "none" : "block"}>
+            <Canvas
+              key={formData ? "0" : "1"}
+              topEntries={formData.topEntries}
+              rows={formData.rows}
+              username={formData.username}
+              potential={formData.potential}
+              options={formData.options}
+              onRendered={() => setLoading(false)}
+            />
+          </Box>
         )}
       </Stack>
     </Center>
   );
+
+  function handleRender() {
+    setLoading(true);
+    setFormData({ topEntries, username, rows, potential, options });
+    setLocalUsername(username);
+    setLocalUserPotential(potential);
+  }
 }
 
 function RowsInput({ rows, setRows }: { rows: number; setRows: (rows: number) => void }) {
@@ -77,7 +110,7 @@ function RowsInput({ rows, setRows }: { rows: number; setRows: (rows: number) =>
         <NumberInput.Control />
         <NumberInput.Input />
       </NumberInput.Root>
-      <Field.HelperText>Enter a number between 6 and 20, inclusive</Field.HelperText>
+      <Field.HelperText>Enter a number between 6 and 20</Field.HelperText>
     </Field.Root>
   );
 }
@@ -120,29 +153,34 @@ function OptionsCheckbox({
   const choices = {
     avg: "Show average potential",
     max: "Show max potential",
+    solidBg: "Solid background color",
   };
 
   return (
-    <Field.Root width={"auto"}>
-      <Field.Label>Options</Field.Label>
-        <For each={Object.entries(choices)}>
-          {([key, value]) => (
+    <Stack>
+      <Field.Root>
+        <Field.Label>Options</Field.Label>
+      </Field.Root>
+      <For each={Object.entries(choices)}>
+        {([key, label]) => {
+          return (
             <Checkbox.Root
               key={key}
-              checked={options[key as keyof CanvasOptions]}
+              checked={options.toggles[key as keyof CanvasToggles]}
               onCheckedChange={(e) =>
-                setOptions((prev: CanvasOptions) => {
-                  const newOptions = { ...prev, [key]: e.checked };
-                  return newOptions as CanvasOptions;
+                setOptions((prev) => {
+                  console.log(prev, key, e);
+                  return { ...prev, toggles: { ...prev.toggles, [key]: !!e.checked } };
                 })
               }
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control />
-              <Checkbox.Label>{value}</Checkbox.Label>
+              <Checkbox.Label>{label}</Checkbox.Label>
             </Checkbox.Root>
-          )}
-        </For>
-    </Field.Root>
+          );
+        }}
+      </For>
+    </Stack>
   );
 }

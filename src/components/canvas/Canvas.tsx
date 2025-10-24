@@ -11,14 +11,25 @@ export type CanvasProps = {
   username: string;
   potential: number;
   options: CanvasOptions;
+  onRendered?: () => void;
 };
 
 export type CanvasOptions = {
-  avg: boolean;
-  max: boolean;
+  toggles: CanvasToggles;
+  customize: CanvasCustomize;
 };
 
-function Canvas({ topEntries, rows, username, potential, options }: CanvasProps) {
+export type CanvasToggles = {
+  avg: boolean;
+  max: boolean;
+  solidBg: boolean;
+}
+
+export type CanvasCustomize = {
+  bgColor: string;
+}
+
+function Canvas({ topEntries, rows, username, potential, options, onRendered }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +46,7 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
     // wait for fonts to be loaded before drawing
     document.fonts.ready.then(() => draw());
 
-    function draw() {
+    async function draw() {
       if (!ctx || !canvas) return;
 
       // solid background fill
@@ -120,7 +131,7 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
       }
 
       // b30 ptt
-      if (options.avg) {
+      if (options.toggles.avg) {
         ctx.font = "40px MyriadPro";
         ctx.textAlign = "right";
         const averagePtt = getAveragePlayPotential(topEntries);
@@ -132,7 +143,7 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
       }
 
       // max ptt
-      if (options.max) {
+      if (options.toggles.max) {
         ctx.font = "40px MyriadPro";
         ctx.textAlign = "right";
         const maxPtt = getMaxPlayPotential(topEntries.slice(0, 30));
@@ -142,8 +153,11 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
             : `B30 play potential: ${maxPtt.toFixed(3)}`;
         drawTextWithOutline(maxPttText, 1690, 296);
       }
-
       ctx.textAlign = "center";
+
+      // load song jackets
+      const jackets = await Promise.all(topEntries.map((song) => getSongJacket(song["title"], song["diff"] as Difficulty)));
+
       // songs grid
       topEntries.forEach(async (song, index) => {
         const col = index % NUM_COLS;
@@ -175,7 +189,7 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
         drawTextWithOutline(`(${toNumber(song["cc"]).toFixed(1)})`, 136 + X_DIST * col, 480 + Y_DIST * row);
 
         // draw song jacket
-        const jacket = await getSongJacket(song["title"], song["diff"] as Difficulty);
+        const jacket = jackets[index];
         if (jacket) {
           ctx.drawImage(jacket, 188 + X_DIST * col, 370 + Y_DIST * row, 170, 170);
         } else {
@@ -252,6 +266,9 @@ function Canvas({ topEntries, rows, username, potential, options }: CanvasProps)
           548 + Y_DIST * row
         );
       });
+
+      console.log("done");
+      if (onRendered) onRendered();
     }
 
     function drawTextWithOutline(text: string, x: number, y: number, color: string = "#ffffff") {

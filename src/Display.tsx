@@ -12,8 +12,8 @@ export default function Display() {
   return (
     <div>
       <Center>
-        <Stack>
-          <Text>Data after fixing:</Text>
+        <Stack gapY={6}>
+          <Text fontWeight={"bold"} fontSize={"3xl"}>Data display</Text>
           <Center>
             <Button onClick={() => saveData()}>Save data</Button>
           </Center>

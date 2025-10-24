@@ -3,10 +3,11 @@ import { toNumber } from "./validation";
 export function getPlayRating(score: number): number {
   if (score >= 10_000_000) return 2.0;
   else if (score >= 9_800_000) return 1 + (score - 9_800_000) / 200_000;
-  else return (score - 9_500_000) / 300_000;
+  else return Math.max(0, (score - 9_500_000) / 300_000);
 }
 
 export function getPlayPotential(cc: number, pr: number): number {
+  if (pr === 0) return 0;
   return Math.max(cc + pr, 0);
 }
 

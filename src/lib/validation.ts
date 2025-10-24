@@ -152,7 +152,7 @@ export function toNumber(str: string): number {
   try {
     return Number(str.replace(/'|,/g, ""));
   } catch {
-    console.log(`[toNumber] Failed to convert ${str}`);
+    // console.log(`[toNumber] Failed to convert ${str}`);
     return 0;
   }
 }

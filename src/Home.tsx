@@ -1,4 +1,4 @@
-import { Box, Button, Center, FileUpload, Icon, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Center, FileUpload, HStack, Icon, Spinner, Stack, Text } from "@chakra-ui/react";
 import { LuUpload } from "react-icons/lu";
 import { useDataContext } from "./contexts/DataContext";
 import { useEffect, useState } from "react";
@@ -10,12 +10,16 @@ import MissingRows from "./components/validation/MissingRows";
 import UnknownRows from "./components/validation/UnknownRows";
 import IncorrectRows from "./components/validation/IncorrectRows";
 import { useNavigate } from "react-router";
+import { getLocalData, setLocalData } from "./lib/storageActions";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState<boolean>(false);
+
   const { data, setData } = useDataContext();
 
+  if (getLocalData().length > 0) return <Skip setData={setData} />
+  
   return (
     <Center>
       <Stack>
@@ -43,19 +47,28 @@ export default function Home() {
   );
 }
 
-// function Skip() {
-//   return (
-//     <Center>
-//       <Stack>
-//         <Text fontWeight={"bold"} fontSize={"3xl"}>
-//           Welcome back!
-//         </Text>
-//         <Text>Data detected, press the button below to proceed.</Text>
-//         <Button>Proceed</Button>
-//       </Stack>
-//     </Center>
-//   );
-// }
+function Skip({ setData }: { setData: React.Dispatch<React.SetStateAction<Record<string, string>[]>> }) {
+  const navigate = useNavigate();
+
+  return (
+    <Center>
+      <Stack>
+        <Text fontWeight={"bold"} fontSize={"3xl"}>
+          Welcome back!
+        </Text>
+        <HStack>
+          <Button width={"auto"} variant={"outline"} onClick={() => handleReset()}>Reset data</Button>
+          <Button width={"auto"} onClick={() => navigate("/render")}>Render your card</Button>
+        </HStack>
+      </Stack>
+    </Center>
+  );
+
+  function handleReset() {
+    setData([]);
+    setLocalData([]);
+  }
+}
 
 function Dropzone({ setFile }: { setFile: React.Dispatch<React.SetStateAction<File | null>> }) {
   function onFileChange(details: FileUpload.FileChangeDetails): void {

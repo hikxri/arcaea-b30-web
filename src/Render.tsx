@@ -4,7 +4,6 @@ import {
   Center,
   Checkbox,
   Field,
-  For,
   Grid,
   GridItem,
   Input,
@@ -12,9 +11,10 @@ import {
   Spinner,
   Stack,
   Text,
+  type CheckboxCheckedChangeDetails,
 } from "@chakra-ui/react";
 import Canvas, { type CanvasOptions, type CanvasProps, type CanvasToggles } from "./components/canvas/Canvas";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useDataContext } from "./contexts/DataContext";
 import { sortData } from "./lib/dataActions";
 import {
@@ -36,6 +36,8 @@ export default function Render() {
 
   // form hack to stop Canvas from re-rendering every time you type something
   const [formData, setFormData] = useState<CanvasProps | null>(null);
+  // prevents Canvas from re-rendering
+  const handleRendered = useCallback(() => setLoading(false), []);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -66,8 +68,8 @@ export default function Render() {
           </GridItem>
         </Grid>
         <Field.Root width={"auto"} alignItems={"center"}>
-          <Button fontWeight="bold" onClick={() => handleRender()} disabled={loading}>
-            {loading ? "Rendering..." : "Render"}
+          <Button fontWeight="bold" onClick={() => handleRender()} loading={loading} loadingText="Rendering...">
+            Render
           </Button>
           <Field.HelperText>Loading song jackets might take a few seconds, please be patient!</Field.HelperText>
         </Field.Root>
@@ -86,7 +88,7 @@ export default function Render() {
               username={formData.username}
               potential={formData.potential}
               options={formData.options}
-              onRendered={() => setLoading(false)}
+              onRendered={handleRendered}
             />
           </Box>
         )}
@@ -150,37 +152,31 @@ function OptionsCheckbox({
   options: CanvasOptions;
   setOptions: React.Dispatch<React.SetStateAction<CanvasOptions>>;
 }) {
-  const choices = {
-    avg: "Show average potential",
-    max: "Show max potential",
-    solidBg: "Solid background color",
-  };
-
   return (
     <Stack>
       <Field.Root>
         <Field.Label>Options</Field.Label>
       </Field.Root>
-      <For each={Object.entries(choices)}>
-        {([key, label]) => {
-          return (
-            <Checkbox.Root
-              key={key}
-              checked={options.toggles[key as keyof CanvasToggles]}
-              onCheckedChange={(e) =>
-                setOptions((prev) => {
-                  console.log(prev, key, e);
-                  return { ...prev, toggles: { ...prev.toggles, [key]: !!e.checked } };
-                })
-              }
-            >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label>{label}</Checkbox.Label>
-            </Checkbox.Root>
-          );
-        }}
-      </For>
+      <ToggleCheckbox val={"avg"} label={"Show average potential"} />
+      <ToggleCheckbox val={"max"} label={"Show max potential"} />
+      <ToggleCheckbox val={"solidBg"} label={"Solid background color"} />
     </Stack>
   );
+
+  function handleToggle(val: keyof CanvasToggles, e: CheckboxCheckedChangeDetails) {
+    setOptions((prev) => {
+      console.log(prev, val, e);
+      return { ...prev, toggles: { ...prev.toggles, [val]: !!e.checked } };
+    });
+  }
+
+  function ToggleCheckbox({ val, label }: { val: keyof CanvasToggles; label: string }) {
+    return (
+      <Checkbox.Root key={val} checked={options.toggles[val]} onCheckedChange={(e) => handleToggle(val, e)}>
+        <Checkbox.HiddenInput />
+        <Checkbox.Control />
+        <Checkbox.Label>{label}</Checkbox.Label>
+      </Checkbox.Root>
+    );
+  }
 }

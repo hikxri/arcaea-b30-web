@@ -1,4 +1,4 @@
-import { Button, Stack } from "@chakra-ui/react";
+import { Button, Field, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 
 export function ShowMoreRows({ cond, children }: { cond: boolean; children: (showAll: boolean) => React.ReactNode }) {
@@ -8,7 +8,10 @@ export function ShowMoreRows({ cond, children }: { cond: boolean; children: (sho
     <Stack alignItems={"center"}>
       {showAll && <ShowButton showAll={showAll} setShowAll={setShowAll} />}
       {children(showAll)}
-      <ShowButton showAll={showAll} setShowAll={setShowAll} />
+      <Field.Root width={"auto"} alignItems={"center"}>
+        <ShowButton showAll={showAll} setShowAll={setShowAll} />
+        <Field.HelperText>Might take a long time to load<br />(click at your and your device's own risk)</Field.HelperText>
+      </Field.Root>
     </Stack>
   );
 }

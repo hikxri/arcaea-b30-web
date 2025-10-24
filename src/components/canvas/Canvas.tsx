@@ -23,11 +23,11 @@ export type CanvasToggles = {
   avg: boolean;
   max: boolean;
   solidBg: boolean;
-}
+};
 
 export type CanvasCustomize = {
   bgColor: string;
-}
+};
 
 function Canvas({ topEntries, rows, username, potential, options, onRendered }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -156,7 +156,9 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
       ctx.textAlign = "center";
 
       // load song jackets
-      const jackets = await Promise.all(topEntries.map((song) => getSongJacket(song["title"], song["diff"] as Difficulty)));
+      const jackets = await Promise.all(
+        topEntries.map((song) => getSongJacket(song["title"], song["diff"] as Difficulty))
+      );
 
       // songs grid
       topEntries.forEach(async (song, index) => {
@@ -176,7 +178,7 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
         ctx.textBaseline = "middle";
         ctx.textAlign = "right";
         ctx.fillStyle = "#ffffff";
-        drawTextWithOutline(String(index + 1), 146 + X_DIST * col, 390 + Y_DIST * row);
+        drawTextWithShadow("#" + String(index + 1), 148 + X_DIST * col, 390 + Y_DIST * row);
 
         // play potential
         ctx.font = "40px MyriadPro";
@@ -205,15 +207,18 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
         ctx.lineTo(leftPoint[0] + 34 * 2 + X_DIST * col, leftPoint[1] + Y_DIST * row); // >
         ctx.lineTo(leftPoint[0] + 34 + X_DIST * col, leftPoint[1] - 34 + Y_DIST * row); // ^
         ctx.closePath();
-
+        
+        ctx.strokeStyle = "#d6d6d6";
+        ctx.lineWidth = 3;
+        ctx.stroke();
         ctx.fillStyle = getDifficultyColor(song["diff"] as Difficulty);
         ctx.fill();
 
-        ctx.font = "36px MyriadPro";
+        ctx.font = "bold 34px MyriadPro";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        drawTextWithOutline(song["level"], leftPoint[0] + 34 + X_DIST * col, leftPoint[1] + Y_DIST * row);
+        drawTextWithShadow(song["level"], leftPoint[0] + 34 + X_DIST * col, leftPoint[1] + Y_DIST * row);
 
         // score
         ctx.fillStyle = "#291b39";
@@ -280,6 +285,17 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
       ctx.lineJoin = "round";
       ctx.miterLimit = 2;
       ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function drawTextWithShadow(text: string, x: number, y: number) {
+      if (!ctx || !canvas) return;
+      ctx.save();
+      ctx.shadowBlur = 2;
+      ctx.shadowColor = "#000000";
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
       ctx.fillText(text, x, y);
       ctx.restore();
     }

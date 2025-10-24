@@ -57,7 +57,6 @@ export function validateData(data: Record<string, string>[]): ValidationResult {
 
   // checking for incorrectness
   for (const [index, row] of data.entries()) {
-    if (index === 0) continue;
     const song = scores.find((r) => r["title"] === row["title"] && r["diff"] === row["diff"]);
     if (!song) continue;
     if (row["level"] !== song["level"]) {

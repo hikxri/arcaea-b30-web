@@ -30,7 +30,7 @@ export default function IncorrectRows({
   return (
     <Stack>
       <Flex justify="center" align="center" gap="2">
-        <Text>There are {count} incorrect row(s) in your file:</Text>
+        <Text>There are {count} incorrect data in your file:</Text>
         <QuestionToolTip text="These songs have the wrong information in your file." />
       </Flex>
       <ShowMoreRows cond={count > 5}>

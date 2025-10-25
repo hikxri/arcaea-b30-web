@@ -18,7 +18,11 @@ export async function parseCSV(file: File): Promise<Record<string, string>[]> {
         for (const row of results.data) {
           const filteredRow: Record<string, string> = {};
           for (const [key, value] of Object.entries(row)) {
-            if (key && key.trim() !== "" && value !== undefined) {
+            if (
+              (key && key.trim() !== "" && value !== undefined) &&
+              (!key.match(/.*_[0-9]+\b/g) && value !== undefined && value !== "")
+              // remove empty duplicate rows renamed by papaparse
+            ) {
               filteredRow[key] = value;
             }
           }

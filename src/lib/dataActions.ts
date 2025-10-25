@@ -7,6 +7,7 @@ export function sortData(data: Record<string, string>[]) {
 }
 
 export function getUnknownHeaders(row: Record<string, string>): string[] {
+  if (row === undefined) return [];
   const VALID_KEYS = Object.keys(inverseHeadersMap);
   return Object.keys(row).filter((key) => !VALID_KEYS.includes(key.toLowerCase()));
 }

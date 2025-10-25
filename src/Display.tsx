@@ -36,7 +36,7 @@ export default function Display() {
             Data display
           </Text>
           <Center>
-            {isLocal ? (
+            {!isLocal ? (
               <Button onClick={() => saveData()}>Save data</Button>
             ) : (
               <Button onClick={() => navigate("/render")}>To render</Button>

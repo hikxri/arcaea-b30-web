@@ -6,6 +6,7 @@ import {
   Field,
   Grid,
   GridItem,
+  HStack,
   Input,
   NumberInput,
   Spinner,
@@ -24,6 +25,7 @@ import {
   setLocalUsername,
   setLocalUserPotential,
 } from "./lib/storageActions";
+import { useNavigate } from "react-router";
 
 export default function Render() {
   const [rows, setRows] = useState<number>(6);
@@ -33,6 +35,8 @@ export default function Render() {
     toggles: { avg: true, max: true, solidBg: false },
     customize: { bgColor: "#130921" },
   });
+
+  const navigate = useNavigate();
 
   // form hack to stop Canvas from re-rendering every time you type something
   const [formData, setFormData] = useState<CanvasProps | null>(null);
@@ -67,12 +71,20 @@ export default function Render() {
             <OptionsCheckbox options={options} setOptions={setOptions} />
           </GridItem>
         </Grid>
-        <Field.Root width={"auto"} alignItems={"center"}>
-          <Button fontWeight="bold" onClick={() => handleRender()} loading={loading} loadingText="Rendering...">
-            Render
-          </Button>
-          <Field.HelperText>Loading song jackets might take a few seconds, please be patient!</Field.HelperText>
-        </Field.Root>
+        <HStack gap={6} alignItems={"top"}>
+          <Field.Root width={"auto"} alignItems={"center"}>
+            <Button fontWeight="bold" onClick={() => handleRender()} loading={loading} loadingText="Rendering...">
+              Render
+            </Button>
+            <Field.HelperText>Loading song jackets might take<br/>a few seconds, please be patient!</Field.HelperText>
+          </Field.Root>
+          <Field.Root width={"auto"} alignItems={"center"}>
+            <Button fontWeight="bold" onClick={() => navigate("/calibrate")}>
+              Calibrate
+            </Button>
+            <Field.HelperText>Text rendered too high/low?<br/>Calibrate your offset first.</Field.HelperText>
+          </Field.Root>
+        </HStack>
         {loading && (
           <Stack alignItems={"center"}>
             <Spinner size="xl" />

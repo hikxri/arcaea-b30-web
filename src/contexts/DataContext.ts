@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import { getLocalData } from "../lib/storageActions";
 
 type DataContextType = {
   data: Record<string, string>[],
@@ -6,7 +7,7 @@ type DataContextType = {
 };
 
 export const DataContext = createContext<DataContextType>({
-  data: [],
+  data: getLocalData(),
   setData: () => {},
 })
 

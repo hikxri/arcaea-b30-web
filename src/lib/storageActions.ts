@@ -13,6 +13,11 @@ export function getLocalUserPotential(): number {
   return potential ? Number(potential) : 0;
 }
 
+export function getLocalOffset(): number {
+  const offset = localStorage.getItem("offset");
+  return offset ? Number(offset) : 0;
+}
+
 export function setLocalData(data: Record<string, string>[]) {
   localStorage.setItem("data", JSON.stringify(data));
 }
@@ -23,4 +28,8 @@ export function setLocalUsername(username: string) {
 
 export function setLocalUserPotential(potential: number) {
   localStorage.setItem("user-potential", String(potential));
+}
+
+export function setLocalOffset(offset: number) {
+  localStorage.setItem("offset", String(offset));
 }

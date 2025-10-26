@@ -4,6 +4,8 @@ import { getDifficultyColor, getGrade, getPotentialColor, getSongJacket } from "
 import { toNumber } from "../../lib/validation";
 import type { Difficulty } from "../../lib/types";
 import { getAveragePlayPotential, getMaxPlayPotential } from "../../lib/calc";
+import { getLocalOffset } from "../../lib/storageActions";
+import { useOffsetContext } from "../../contexts/OffsetContext";
 
 export type CanvasProps = {
   topEntries: Record<string, string>[];
@@ -32,6 +34,11 @@ export type CanvasCustomize = {
 function Canvas({ topEntries, rows, username, potential, options, onRendered }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  let OFFSET = useOffsetContext().offset;
+  if (OFFSET === null) {
+    OFFSET = getLocalOffset();
+  }
 
   const WIDTH = 1800;
   const HEIGHT = 460 + 272 * rows;
@@ -297,8 +304,8 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
       ctx.lineWidth = 8;
       ctx.lineJoin = "round";
       ctx.miterLimit = 2;
-      ctx.strokeText(text, x, y);
-      ctx.fillText(text, x, y);
+      ctx.strokeText(text, x, y + (OFFSET ?? 0));
+      ctx.fillText(text, x, y + (OFFSET ?? 0));
       ctx.restore();
     }
 
@@ -309,7 +316,7 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
       ctx.shadowColor = "#000000";
       ctx.shadowOffsetX = 3;
       ctx.shadowOffsetY = 3;
-      ctx.fillText(text, x, y);
+      ctx.fillText(text, x, y + (OFFSET ?? 0));
       ctx.restore();
     }
   });
@@ -317,7 +324,7 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
   return (
     <Box ref={containerRef} justifyItems={"center"} alignItems={"center"} margin={"2"}>
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT}
-      style={{ width: "60vw" }}
+      style={{ maxWidth: "60vw" }}
       >
         Aw :( Canvas is not supported on your browser, the contents can't be rendered.
       </canvas>

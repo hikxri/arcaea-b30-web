@@ -11,6 +11,7 @@ import UnknownRows from "./components/validation/UnknownRows";
 import IncorrectRows from "./components/validation/IncorrectRows";
 import { useNavigate } from "react-router";
 import { getLocalData, setLocalData } from "./lib/storageActions";
+import ResetDataButton from "./components/buttons/ResetDataButton";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -57,7 +58,7 @@ function Skip({ setData }: { setData: React.Dispatch<React.SetStateAction<Record
           Welcome back!
         </Text>
         <HStack>
-          <Button width={"auto"} variant={"outline"} onClick={() => handleReset()}>Reset data</Button>
+          <ResetDataButton onClick={handleReset}/>
           <Button width={"auto"} onClick={() => navigate("/render")}>Render your card</Button>
         </HStack>
       </Stack>

@@ -6,21 +6,28 @@ import { DataContext } from "./contexts/DataContext";
 import { useState } from "react";
 import Display from "./Display";
 import Render from "./Render";
+import Calibrate from "./Calibrate";
+import { OffsetContext } from "./contexts/OffsetContext";
+import { getLocalData, getLocalOffset } from "./lib/storageActions";
 
 export default function App() {
-  const [data, setData] = useState<Record<string, string>[]>([]);
+  const [data, setData] = useState<Record<string, string>[]>(getLocalData());
+  const [offset, setOffset] = useState<number>(getLocalOffset());
 
   return (
     <Provider>
-      <DataContext.Provider value={{ data, setData }}>
+      <OffsetContext.Provider value={{ offset, setOffset }}>
+        <DataContext.Provider value={{ data, setData }}>
         <HashRouter>
           <Routes>
             <Route index element={<Home />} />
             <Route path="display" element={<Display />} />
             <Route path="render" element={<Render />} />
+            <Route path="calibrate" element={<Calibrate />} />
           </Routes>
         </HashRouter>
       </DataContext.Provider>
+      </OffsetContext.Provider>
     </Provider>
   );
 }

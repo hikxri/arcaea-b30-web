@@ -44,7 +44,20 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
     const ctx = canvas?.getContext("2d");
 
     // wait for fonts to be loaded before drawing
-    document.fonts.ready.then(() => draw());
+    document.fonts.ready.then(() => {
+      loadFonts();
+    });
+
+    // for some reason mobile browsers need this
+    async function loadFonts() {
+      await Promise.all([
+        new FontFace("MyriadPro", "url('fonts/MyriadPro-Regular.ttf')").load(),
+        new FontFace("MyriadPro", "url('fonts/MyriadPro-Bold.ttf')", { weight: "bold" }).load(),
+        new FontFace("Nunito", "url('fonts/Nunito.ttf')").load(),
+      ]);
+
+      draw();
+    }
 
     async function draw() {
       if (!ctx || !canvas) return;
@@ -302,8 +315,10 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
   });
 
   return (
-    <Box ref={containerRef} justifyItems={"center"} margin={"2"}>
-      <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} style={{ width: "60%" }}>
+    <Box ref={containerRef} justifyItems={"center"} alignItems={"center"} margin={"2"}>
+      <canvas ref={canvasRef} width={WIDTH} height={HEIGHT}
+      style={{ width: "60vw" }}
+      >
         Aw :( Canvas is not supported on your browser, the contents can't be rendered.
       </canvas>
     </Box>

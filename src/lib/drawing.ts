@@ -61,13 +61,17 @@ export async function getSongJacket(title: string, diff: Difficulty): Promise<HT
 
   if (await imageExists(diffPath)) {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = diffPath;
+    await img.decode();
     return img;
   }
 
   if (await imageExists(basePath)) {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = basePath;
+    await img.decode();
     return img;
   }
   

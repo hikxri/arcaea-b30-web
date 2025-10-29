@@ -31,7 +31,7 @@ export default function Display() {
   return (
     <div>
       <Center>
-        <Stack gapY={4}>
+        <Stack justify={"center"} align={"center"} gapY={4}>
           <Text fontWeight={"bold"} fontSize={"3xl"}>
             Data display
           </Text>

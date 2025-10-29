@@ -6,9 +6,9 @@ import {
   Field,
   Grid,
   GridItem,
-  HStack,
   Input,
   NumberInput,
+  SimpleGrid,
   Spinner,
   Stack,
   Text,
@@ -71,20 +71,20 @@ export default function Render() {
             <OptionsCheckbox options={options} setOptions={setOptions} />
           </GridItem>
         </Grid>
-        <HStack gap={6} alignItems={"top"}>
+        <SimpleGrid columns={2} gap={6} alignItems={"top"} maxWidth={"50%"}>
           <Field.Root width={"auto"} alignItems={"center"}>
             <Button fontWeight="bold" onClick={() => handleRender()} loading={loading} loadingText="Rendering...">
               Render
             </Button>
-            <Field.HelperText>Loading song jackets might take<br/>a few seconds, please be patient!</Field.HelperText>
+            <Field.HelperText textWrap={"wrap"} textAlign={"center"}>Loading song jackets might take a few seconds.</Field.HelperText>
           </Field.Root>
           <Field.Root width={"auto"} alignItems={"center"}>
             <Button fontWeight="bold" onClick={() => navigate("/calibrate")}>
               Calibrate
             </Button>
-            <Field.HelperText>Text rendered too high/low?<br/>Calibrate your offset first.</Field.HelperText>
+            <Field.HelperText textWrap={"wrap"} textAlign={"center"}>Text rendered too high/low? Calibrate your offset first.</Field.HelperText>
           </Field.Root>
-        </HStack>
+        </SimpleGrid>
         {loading && (
           <Stack alignItems={"center"}>
             <Spinner size="xl" />

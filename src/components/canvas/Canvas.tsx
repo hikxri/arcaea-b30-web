@@ -324,7 +324,7 @@ function Canvas({ topEntries, rows, username, potential, options, onRendered }: 
   return (
     <Box ref={containerRef} justifyItems={"center"} alignItems={"center"} margin={"2"}>
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT}
-      style={{ maxWidth: "60vw" }}
+      style={{ maxWidth: "40vw" }}
       >
         Aw :( Canvas is not supported on your browser, the contents can't be rendered.
       </canvas>

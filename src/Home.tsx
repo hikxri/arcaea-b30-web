@@ -23,8 +23,8 @@ export default function Home() {
   
   return (
     <Center>
-      <Stack>
-        <Text fontWeight={"bold"} fontSize={"3xl"}>
+      <Stack justify={"center"} align={"center"}>
+        <Text fontWeight={"bold"} fontSize={"3xl"} >
           Welcome
         </Text>
         {!file && (
@@ -53,7 +53,7 @@ function Skip({ setData }: { setData: React.Dispatch<React.SetStateAction<Record
 
   return (
     <Center>
-      <Stack>
+      <Stack justify={"center"} align={"center"}>
         <Text fontWeight={"bold"} fontSize={"3xl"}>
           Welcome back!
         </Text>

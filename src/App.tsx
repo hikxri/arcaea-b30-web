@@ -9,6 +9,7 @@ import Render from "./Render";
 import Calibrate from "./Calibrate";
 import { OffsetContext } from "./contexts/OffsetContext";
 import { getLocalData, getLocalOffset } from "./lib/storageActions";
+import Navbar from "./components/ui/Navbar";
 
 export default function App() {
   const [data, setData] = useState<Record<string, string>[]>(getLocalData());
@@ -18,15 +19,16 @@ export default function App() {
     <Provider>
       <OffsetContext.Provider value={{ offset, setOffset }}>
         <DataContext.Provider value={{ data, setData }}>
-        <HashRouter>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="display" element={<Display />} />
-            <Route path="render" element={<Render />} />
-            <Route path="calibrate" element={<Calibrate />} />
-          </Routes>
-        </HashRouter>
-      </DataContext.Provider>
+          <HashRouter>
+            <Navbar />
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="display" element={<Display />} />
+              <Route path="render" element={<Render />} />
+              <Route path="calibrate" element={<Calibrate />} />
+            </Routes>
+          </HashRouter>
+        </DataContext.Provider>
       </OffsetContext.Provider>
     </Provider>
   );
